@@ -33,7 +33,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import seaborn as sns
 
-
 # Streamlit File Uploader to allow the user to select an Excel file
 uploaded_file = st.file_uploader("Choose the Excel file that contains your ancestry breakdown", type="xlsx")
 
@@ -87,7 +86,7 @@ if uploaded_file:
 
     # Create a base map using Folium
     map_center = [df["Lat"].mean(), df["Long"].mean()]
-    m = folium.Map(location=map_center, zoom_start=1)
+    m = folium.Map(location=map_center, zoom_start=2, width="100%", height="600px")
     
     # Dynamically generate a color palette
     color_palette = sns.color_palette("Set2", len(ancestry_columns)).as_hex()
