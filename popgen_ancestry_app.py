@@ -35,19 +35,25 @@ import seaborn as sns
 
 
 # Streamlit File Uploader to allow the user to select an Excel file
-uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+uploaded_file = st.file_uploader("Choose the Excel file that contains your ancestry breakdown", type="xlsx")
 
-def create_pie_chart(row, ancestry_columns):
+def create_pie_chart(row, ancestry_columns, ancestry_colours):
     # Extract the values for each ancestry column
     ancestry_values = [row[col] for col in ancestry_columns]
     
-    # Remove zero values and corresponding labels (optional, to only show relevant slices)
-    ancestry_values = [val for val in ancestry_values if val > 0]
-    labels = [label for label, val in zip(ancestry_columns, ancestry_values) if val > 0]
+    # Keep all labels but only plot non-zero slices
+    labels = ancestry_columns
+    slice_values = [val if val > 0 else 0.001 for val in ancestry_values]
+    
+    # Get the correct colors for the pie chart (same as markers)
+    slice_colors = [ancestry_colors[label] for label in ancestry_columns]
+    
+    # Debugging: Print the extracted values
+    st.write(f"Ancestry Values for {row['Pop']}: {dict(zip(ancestry_columns, ancestry_values))}")
     
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(5, 5))
-    ax.pie(ancestry_values, labels=labels, autopct="%1.1f%%", startangle=90, colors=plt.cm.Paired.colors)
+    ax.pie(ancestry_values, labels=labels, autopct="%1.1f%%", startangle=90, colors=slice_colors)
     ax.axis("equal")  # Equal aspect ratio ensures that pie is drawn as a circle.
     
     # Convert plot to a PNG image to embed in HTML (for popup)
@@ -63,6 +69,7 @@ def create_pie_chart(row, ancestry_columns):
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file)
+    df.columns = df.columns.str.strip() # Ensure columns are clean
     st.write("File successfully uploaded. Here is a preview:")
     st.dataframe(df.head())
     
@@ -75,9 +82,6 @@ if uploaded_file:
     # Create a base map using Folium
     map_center = [df["Lat"].mean(), df["Long"].mean()]
     m = folium.Map(location=map_center, zoom_start=1)
-
-    # Add a MarkerCluster to group markers on the map
-    marker_cluster = MarkerCluster().add_to(m)
     
     # Dynamically generate a color palette
     color_palette = sns.color_palette("Set2", len(ancestry_columns)).as_hex()
@@ -87,8 +91,14 @@ if uploaded_file:
 
     # Add markers for each population
     for _, row in df.iterrows():
+        # Find the ancestry with the highest percentage
+        ancestry_values = {col: row[col] for col in ancestry_columns}
+        dominant_ancestry = max(ancestry_values, key=ancestry_values.get)  
+        marker_color = ancestry_colors.get(dominant_ancestry, '#808080')  # Default to gray if ancestry not found
+        #st.write(f"Population: {row['Pop']}, Dominant Ancestry: {dominant_ancestry}, Color: {marker_color}")
+        
         # Generate the pie chart for the population based on the ancestry columns
-        pie_chart_img = create_pie_chart(row, ancestry_columns)
+        pie_chart_img = create_pie_chart(row, ancestry_columns, ancestry_colors)
         
         # HTML to display the pie chart in the popup
         popup_html = f"""
@@ -101,13 +111,18 @@ if uploaded_file:
         """
         
         # Add the marker with the pie chart in the popup
-        folium.Marker(
+        folium.CircleMarker(
             location=[row["Lat"], row["Long"]],
+            radius=10,
+            color=marker_color,
+            fill = True,
+            fill_color=marker_color,
+            fill_opacity=0.5,
             popup=folium.Popup(popup_html, max_width=350)
-        ).add_to(marker_cluster)
+        ).add_to(m)
 
-    # Display the map using Streamlit
+    # Display the map
     folium_static(m)
     
 else:
-    st.write("Please upload an Excel file to get started :)")
+    st.write("Please upload an Excel file to get your ancestry breakdown map :)")
