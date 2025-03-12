@@ -19,19 +19,23 @@ Date: 10/03/2025
 Author: Anna Castellet
 """
 
-import streamlit as st
-from streamlit_folium import folium_static
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import folium
-from folium.plugins import MarkerCluster
+# Standard Libraries
 import io
 import base64
 
+# Third-party Libraries
+import pandas as pd
+import streamlit as st
+import folium
+from folium.plugins import MarkerCluster
+from streamlit_folium import folium_static
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import seaborn as sns
 
-# Read the input Excel file
-df = pd.read_excel(r"\\wsl.localhost\Ubuntu\home\annac\binp29\popgen_project\modern_ancestry_in_populations.xlsx")
+
+# Streamlit File Uploader to allow the user to select an Excel file
+uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 
 def create_pie_chart(row, ancestry_columns):
     # Extract the values for each ancestry column
@@ -57,39 +61,53 @@ def create_pie_chart(row, ancestry_columns):
     
     return img_str
 
-# Start the streamlit app
-st.title("Modern Ancestries in Populations")
-
-# Dynamically get the ancestry columns (excluding "Pop", "Lat", "Long", and other non-ancestry columns)
-ancestry_columns = [col for col in df.columns if col not in ["Pop", "Lat", "Long", "Continent"]]
-
-# Create a base map using Folium
-map_center = [df["Lat"].mean(), df["Long"].mean()]
-m = folium.Map(location=map_center, zoom_start=1)
-
-# Add a MarkerCluster to group markers on the map
-marker_cluster = MarkerCluster().add_to(m)
-
-# Add markers for each population
-for _, row in df.iterrows():
-    # Generate the pie chart for the population based on the ancestry columns
-    pie_chart_img = create_pie_chart(row, ancestry_columns)
+if uploaded_file:
+    df = pd.read_excel(uploaded_file)
+    st.write("File successfully uploaded. Here is a preview:")
+    st.dataframe(df.head())
     
-    # HTML to display the pie chart in the popup
-    popup_html = f"""
-    <html>
-        <body>
-            <h4>{row["Pop"]}</h4>
-            <img src="data:image/png;base64,{pie_chart_img}" width="300" height="300"/>
-        </body>
-    </html>
-    """
-    
-    # Add the marker with the pie chart in the popup
-    folium.Marker(
-        location=[row["Lat"], row["Long"]],
-        popup=folium.Popup(popup_html, max_width=350)
-    ).add_to(marker_cluster)
+    # Start the streamlit app
+    st.title("Population Ancestry Map")
 
-# Display the map using Streamlit
-folium_static(m)
+    # Dynamically get the ancestry columns (excluding "Pop", "Lat", "Long", and other non-ancestry columns)
+    ancestry_columns = [col for col in df.columns if col not in ["Pop", "Lat", "Long", "Continent"]]
+
+    # Create a base map using Folium
+    map_center = [df["Lat"].mean(), df["Long"].mean()]
+    m = folium.Map(location=map_center, zoom_start=1)
+
+    # Add a MarkerCluster to group markers on the map
+    marker_cluster = MarkerCluster().add_to(m)
+    
+    # Dynamically generate a color palette
+    color_palette = sns.color_palette("Set2", len(ancestry_columns)).as_hex()
+
+    # Create a dictionary to map ancestry columns to colors
+    ancestry_colors = dict(zip(ancestry_columns, color_palette))
+
+    # Add markers for each population
+    for _, row in df.iterrows():
+        # Generate the pie chart for the population based on the ancestry columns
+        pie_chart_img = create_pie_chart(row, ancestry_columns)
+        
+        # HTML to display the pie chart in the popup
+        popup_html = f"""
+        <html>
+            <body>
+                <h4>{row["Pop"]}</h4>
+                <img src="data:image/png;base64,{pie_chart_img}" width="300" height="300"/>
+            </body>
+        </html>
+        """
+        
+        # Add the marker with the pie chart in the popup
+        folium.Marker(
+            location=[row["Lat"], row["Long"]],
+            popup=folium.Popup(popup_html, max_width=350)
+        ).add_to(marker_cluster)
+
+    # Display the map using Streamlit
+    folium_static(m)
+    
+else:
+    st.write("Please upload an Excel file to get started :)")
