@@ -42,8 +42,8 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
     ancestry_values = [row[col] for col in ancestry_columns]
     
     # Keep all labels but only plot non-zero slices
-    labels = ancestry_columns
-    slice_values = [val if val > 0 else 0.001 for val in ancestry_values]
+    labels = [ancestry_columns[i] for i, value in enumerate(ancestry_values) if value > 0]
+    slice_values = [value for value in ancestry_values if value > 0]
     
     # Get the correct colors for the pie chart (same as markers)
     slice_colors = [ancestry_colors[label] for label in ancestry_columns]
@@ -53,7 +53,7 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
     
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(5, 5))
-    ax.pie(ancestry_values, labels=labels, autopct="%1.1f%%", startangle=90, colors=slice_colors)
+    ax.pie(slice_values, labels=labels, autopct="%1.1f%%", startangle=90, colors=slice_colors)
     ax.axis("equal")  # Equal aspect ratio ensures that pie is drawn as a circle.
     
     # Convert plot to a PNG image to embed in HTML (for popup)
