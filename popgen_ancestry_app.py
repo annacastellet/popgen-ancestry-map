@@ -46,15 +46,21 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
     slice_values = [value for value in ancestry_values if value > 0]
     
     # Get the correct colors for the pie chart (same as markers)
-    slice_colors = [ancestry_colors[label] for label in ancestry_columns]
+    slice_colors = [ancestry_colors[label] for label in labels]
     
     # Debugging: Print the extracted values
-    st.write(f"Ancestry Values for {row['Pop']}: {dict(zip(ancestry_columns, ancestry_values))}")
+    #st.write(f"Ancestry Values for {row['Pop']}: {dict(zip(ancestry_columns, ancestry_values))}")
     
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(5, 5))
-    ax.pie(slice_values, labels=labels, autopct="%1.1f%%", startangle=90, colors=slice_colors)
-    ax.axis("equal")  # Equal aspect ratio ensures that pie is drawn as a circle.
+    ax.pie(
+        slice_values,
+        autopct="%1.1f%%",
+        startangle=90,
+        colors=slice_colors,
+        textprops={"fontsize": 14}
+    )
+    ax.axis("equal") # Equal aspect ratio ensures that pie is drawn as a circle.
     
     # Convert plot to a PNG image to embed in HTML (for popup)
     buf = io.BytesIO()
@@ -98,7 +104,7 @@ if uploaded_file:
         #st.write(f"Population: {row['Pop']}, Dominant Ancestry: {dominant_ancestry}, Color: {marker_color}")
         
         # Generate the pie chart for the population based on the ancestry columns
-        pie_chart_img = create_pie_chart(row, ancestry_columns, ancestry_colors)
+        pie_chart_img = create_pie_chart(row, ancestry_columns, marker_color)
         
         # HTML to display the pie chart in the popup
         popup_html = f"""
