@@ -33,6 +33,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import seaborn as sns
 
+# Import the add_legend function from legend.py
+from legend import add_legend
+
 # Streamlit File Uploader to allow the user to select an Excel file
 uploaded_file = st.file_uploader("Choose the Excel file that contains your ancestry breakdown", type="xlsx")
 
@@ -109,13 +112,16 @@ if uploaded_file:
     # Create a base map using Folium
     map_center = [df["Lat"].mean(), df["Long"].mean()]
     m = folium.Map(location=map_center, zoom_start=2, width="100%", height="600px")
-    
+        
     # Dynamically generate a color palette
     color_palette = sns.color_palette("Set2", len(ancestry_columns)).as_hex()
 
     # Create a dictionary to map ancestry columns to colors
     ancestry_colors = dict(zip(ancestry_columns, color_palette))
-
+    
+    # Add the legend to the map from legend.py
+    m = add_legend(m, ancestry_colors, df, ancestry_columns)
+    
     # Add markers for each population
     for _, row in df.iterrows():
         # Find the ancestry with the highest percentage
@@ -131,7 +137,7 @@ if uploaded_file:
         popup_html = f"""
         <html>
             <body>
-                <h4>{row["Pop"]}</h4>
+                <h4 style="text-align:center; font-weight:bold;">{row["Pop"]}</h4>
                 <img src="data:image/png;base64,{pie_chart_img}" width="300" height="300"/>
             </body>
         </html>
