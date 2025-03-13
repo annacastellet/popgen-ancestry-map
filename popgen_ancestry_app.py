@@ -40,10 +40,10 @@ def custom_autopct(pct):
     '''
     Define custom autopct depending on the value of the percentage
     '''
-    if pct >= 2:  # Only show the percentage if it's 2% or more
-        return f"{pct:.1f}%"  # Show percentage with 1 decimal place
+    if pct >= 5:  # Only show the percentage if it's 2% or more
+        return f"{pct:.1f}%"
     else:
-        return ""  # Don't show anything for slices smaller than 2%
+        return "" # Don't show anything for slices smaller than 2%
 
 
 def create_pie_chart(row, ancestry_columns, ancestry_colours):
@@ -62,7 +62,7 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
 
     # Plot the pie chart
     fig, ax = plt.subplots(figsize=(5, 5))    
-    ax.pie(
+    wedges, texts, autotexts = ax.pie(
         slice_values,
         autopct=custom_autopct,
         startangle=90,
@@ -71,11 +71,22 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
         pctdistance=0.6
     )
     ax.axis("equal") # Equal aspect ratio ensures that pie is drawn as a circle.
+        
+    # Add legend inside the pie chart
+    ax.legend(
+        wedges,
+        labels,
+        fontsize=14,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.1), # Position it outside the figure
+        frameon=False # Hide the frame around the legend
+    )
     
     # Convert plot to a PNG image to embed in HTML (for popup)
     buf = io.BytesIO()
-    canvas = FigureCanvas(fig)
-    canvas.print_png(buf)
+    fig.tight_layout(pad=1.0)  # Automatically adjusts the layout to avoid clipping/stretching
+    # Save the figure to the buffer, ensuring the legend is included
+    fig.savefig(buf, format='png', bbox_inches="tight", pad_inches=0.2)
     buf.seek(0)
     
     # Convert PNG to base64 string (to embed in HTML)
