@@ -36,6 +36,16 @@ import seaborn as sns
 # Streamlit File Uploader to allow the user to select an Excel file
 uploaded_file = st.file_uploader("Choose the Excel file that contains your ancestry breakdown", type="xlsx")
 
+def custom_autopct(pct):
+    '''
+    Define custom autopct depending on the value of the percentage
+    '''
+    if pct >= 2:  # Only show the percentage if it's 2% or more
+        return f"{pct:.1f}%"  # Show percentage with 1 decimal place
+    else:
+        return ""  # Don't show anything for slices smaller than 2%
+
+
 def create_pie_chart(row, ancestry_columns, ancestry_colours):
     # Extract the values for each ancestry column
     ancestry_values = [row[col] for col in ancestry_columns]
@@ -49,15 +59,16 @@ def create_pie_chart(row, ancestry_columns, ancestry_colours):
     
     # Debugging: Print the extracted values
     #st.write(f"Ancestry Values for {row['Pop']}: {dict(zip(ancestry_columns, ancestry_values))}")
-    
+
     # Plot the pie chart
-    fig, ax = plt.subplots(figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(5, 5))    
     ax.pie(
         slice_values,
-        autopct="%1.1f%%",
+        autopct=custom_autopct,
         startangle=90,
         colors=slice_colors,
-        textprops={"fontsize": 14}
+        textprops={"fontsize": 14},
+        pctdistance=0.6
     )
     ax.axis("equal") # Equal aspect ratio ensures that pie is drawn as a circle.
     
