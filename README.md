@@ -1,7 +1,7 @@
 # 🌍 PopGen Ancestry Map
 **PopGen Ancestry Map** is an interactive web application for visualizing population ancestry data. Users can upload their own dataset, and the app generates a map with pie chart popups showing ancestry breakdowns for each population.
 
-## Why use this tool?
+## 🔍 Why use this tool?
 Who wants to manually analyse large tables of population data? I'm guessing not you (since you end up in this repository). This app helps users quickly identify dominant ancestries and explore geographic patterns in population distributions. Perfect for geneticist, anthropologist, historians, or anyone who want to play detective with ancestry data (without the boring parts).
 
 ## ⚙️ Installation and Setup
