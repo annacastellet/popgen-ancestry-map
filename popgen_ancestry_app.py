@@ -3,14 +3,21 @@
 """
 Script name: popgen_ancestry_app.py
 
-Description:
+Description: This program generates an interactive map that plots populations with pie chart popups showing their ancestry breakdowns.
+User need to provide the dataset in Excel (.xlsx) format
 
-User-defined functions: 
-Standard modules: 
-Non-standard modules: 
+User-defined functions: custom_autopct, extract_ancestry_values, create_pie_chart, create_ancestry_map
+Modules: io, base64, pandas, streamlit, folium, folium.plugins.MarkerCluster, streamlit_folium.folium_static, matplotlib.pyplot, seaborn, legend.add_legend
 
 Procedure:
-    1.
+    1. Prompt the user to upload an Excel file (.xlsx) containing population and ancestry data
+    2. Read the data and strip the blank spaces from column names
+    3. Display the first few rows of the data frame to give the user a preview
+    4. Creates a list of ancestries filtering out the columns that do not correspond to ancestry data (Pop, Lat, Long, Continent)
+    5. Pass the dataframe and the filtered ancestry columns list to a function that generated a folium map object, which:
+        - Plots the populations on the map at the corresponding Lat and Long positions
+        - Creates pie chart popups for each population showing their ancestry breakdowns (with percentages)
+    6. Displays the map into the Streamlit app, allowing users to interact with it
 
 Usage: streamlit run popgen_ancestry_app.py
 
@@ -22,18 +29,14 @@ Author: Anna Castellet
 ### IMPORTING ###
 #################
 
-# Standard Libraries
 import io
 import base64
-
-# Third-party Libraries
 import pandas as pd
 import streamlit as st
 import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import seaborn as sns
 
 # Import the add_legend function from legend.py

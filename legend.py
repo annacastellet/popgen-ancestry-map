@@ -1,35 +1,63 @@
 #!/usr/bin/python3
 
+"""
+Script name: legend.py
+
+Description: This program defines a function that adds a draggable legend to a Folium map.
+It generates an interactive map that plots populations with pie chart popups showing their ancestry breakdowns, based on the provided dataset.
+
+User-defined functions: add_legend
+Modules: folium.elements.MarcoElement, jinja2.Template
+
+Usage: <foliumMapObject> = add_legend(m, ancestry_colors, df, ancestry_columns)
+This code is intended to be used as part of a larger mapping application where the map can be displayed with an interactive legend showing dominant ancestries
+
+Date of adaptation: 13/03/2025 
+Author: Anna Castellet (adapted from Jaro Steindorff)
+"""
+
 from folium.elements import MacroElement
 from jinja2 import Template
 
-def add_legend(m, ancestry_colors, df, ancestry_columns, dominance_threshold=0.45):
+def add_legend(m, ancestry_colors, df, ancestry_columns, threshold=0.45):
     """
     Adds a draggable legend to the provided folium map, including only the ancestries
     that are dominant in at least one population.
     
-    Parameters:
-    m (folium.Map): The Folium map object.
-    ancestry_colors (dict): Dictionary mapping ancestry names to their colors.
-    df (pd.DataFrame): The DataFrame containing population data.
-    ancestry_columns (list): List of ancestry columns.
-    dominance_threshold (float): The threshold percentage to consider an ancestry as dominant (default is 0.5, i.e., 50%).
+    Args:
+        m (folium.Map): The Folium map object
+        ancestry_colors (dict): Dictionary mapping ancestry names to their colors
+        df (pd.DataFrame): The DataFrame containing population data
+        ancestry_columns (list): List of ancestry columns
+        threshold (float): The threshold percentage to consider an ancestry as dominant (default is 0.45, i.e., 45%)
     
     Returns:
-    m : The map object with the legend added.
+        m : The map object with the legend added
     """
-    # Set of ancestries that are dominant in at least one population
+    # Creat a set of ancestries that are dominant in at least one population
     dominant_ancestries = set()
 
-    # Iterate over the populations (rows of the dataframe)
-    for _, row in df.iterrows():
-        ancestry_values = {col: row[col] for col in ancestry_columns}
+    # Iterating through every row of the dataset
+    for _, population in df.iterrows():
+        # Create a dictionary of ancestry values for the current population
+        ancestry_values = {}
+        for col in ancestry_columns:
+            ancestry_values[col] = population[col]
+
+        # Find the ancestry with the highest value (percentage)
         max_ancestry = max(ancestry_values, key=ancestry_values.get)
-        if ancestry_values[max_ancestry] >= dominance_threshold:
+
+        # If the maximum ancestry value is >= to the threshold, add it to the set of dominant ancestries
+        if ancestry_values[max_ancestry] >= threshold:
             dominant_ancestries.add(max_ancestry)
-    
-    # Filter the ancestry_colors to include only dominant ancestries
-    filtered_ancestry_colors = {ancestry: color for ancestry, color in ancestry_colors.items() if ancestry in dominant_ancestries}
+
+    # Filter the ancestry_colors to include only the ones correspondig to the dominant ancestries
+    filtered_ancestry_colors = {}
+    # Iterate over each ancestry and its corresponding color
+    for ancestry, color in ancestry_colors.items():
+        # If the ancestry is in the set of dominant ancestries, add it to the filtered coolors dictionary, which will be used for te legend
+        if ancestry in dominant_ancestries:
+            filtered_ancestry_colors[ancestry] = color
 
     # Build the legend items based on the filtered ancestries
     legend_items = "".join(
