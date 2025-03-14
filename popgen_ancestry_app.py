@@ -43,10 +43,10 @@ def custom_autopct(pct):
     '''
     Define custom autopct depending on the value of the percentage
     '''
-    if pct >= 5:  # Only show the percentage if it's 2% or more
+    if pct >= 5:  # Only show the percentage if it's 5% or more
         return f"{pct:.1f}%"
     else:
-        return "" # Don't show anything for slices smaller than 2%
+        return "" # Don't show anything for slices smaller than 5%
 
 
 def create_pie_chart(row, ancestry_columns, ancestry_colours):
@@ -111,7 +111,7 @@ if uploaded_file:
 
     # Create a base map using Folium
     map_center = [df["Lat"].mean(), df["Long"].mean()]
-    m = folium.Map(location=map_center, zoom_start=2, width="100%", height="600px")
+    m = folium.Map(location=map_center, zoom_start=2, tiles="Cartodb Positron", width="100%", height="600px")
         
     # Dynamically generate a color palette
     color_palette = sns.color_palette("Set2", len(ancestry_columns)).as_hex()
