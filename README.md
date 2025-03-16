@@ -2,7 +2,7 @@
 **PopGen Ancestry Map** is an interactive web application for visualizing population ancestry data. Users can upload their own dataset, and the app generates a map with pie chart popups showing ancestry breakdowns for each population.
 
 ## 🔍 Why use this tool?
-Who wants to manually analyse large tables of population data? I'm guessing not you (since you end up in this repository). This app helps users quickly identify dominant ancestries and explore geographic patterns in population distributions. Perfect for geneticist, anthropologist, historians, or anyone who wants to play detective with ancestry data (without the boring parts).
+Who wants to manually analyse large tables of population data? I'm guessing not you (since you end up in this repository). This app helps users quickly identify patterns of population ancestries around the globe. Useful for population genetics studies.
 
 ## ⚙️ Installation and Setup
 ### 1. Clone the repository
@@ -14,7 +14,6 @@ cd popgen-ancestry-map
 ### 2. Install dependencies
 You can install the required dependencies using Conda.
 ```bash
-conda activate
 conda env create -f popgen_environment.yml
 conda activate popgen
 ```
@@ -37,11 +36,11 @@ Your data (in Excel ``.xlsx`` format) should follow this structure:
 This repository includes a test dataset (``data/modern_ancestry_in_populations.xlsx``) that you can use to see how the application works.
 
 ### Want to use your own data?
-Make sure the data set contains the following columns (with the following headers):
-* Pop column for population names
-* Lat and Long columns for geographic coordinates
-* Continent column
-* One or more ancestry columns, each containing proportions (values from 0 to 1) of different ancestries
+Make sure the data set contains the following columns (with the corresponding headers):
+* ``Pop`` column for population names
+* ``Lat`` and ``Long`` columns for geographic coordinates
+* ``Continent`` column
+* One or more ancestry columns (can have any name), each containing proportions (values from 0 to 1) of different ancestries
   
 ## 💡 How it works?
 1. Upload your dataset
@@ -51,6 +50,6 @@ Make sure the data set contains the following columns (with the following header
 5. Pie charts appear in popups when you click a marker
 6. A draggable legend highlights dominant ancestries
 
-## Created by Anna Castellet
+## 
 If you encounter any issues or have suggestions for improvement, feel free to reach out!
 📩 annacastellet.5@gmail.com
