@@ -21,7 +21,7 @@ conda activate popgen
 ### 3. Run the App
 In your terminal, with the Conda environment activated, run:
 ```bash
-streamlit run popgen_ancestry_app.py
+streamlit run scripts/popgen_ancestry_app.py
 ```
 Streamlit will open the app in your favourite browser, where you'll be prompted to upload your data.
 
