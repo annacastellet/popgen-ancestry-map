@@ -35,6 +35,7 @@ import pandas as pd
 import streamlit as st
 import folium
 from folium.plugins import MarkerCluster
+from folium.plugins import Fullscreen
 from streamlit_folium import folium_static
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -171,6 +172,9 @@ def create_ancestry_map(df: pd.DataFrame, ancestry_columns: list[str]) -> folium
     
     # Add legend to the map using the function written in the legend.py code
     m = add_legend(m, ancestry_colors, df, ancestry_columns)
+    
+    # Add Fullscreen plugin
+    Fullscreen(position="topleft").add_to(m)
     
     # Iterating through every row of the dataset
     for _, population in df.iterrows(): # iterrows() returns both the index and the row, ignoring the index variable (_)
