@@ -21,7 +21,7 @@ Procedure:
 
 Usage: streamlit run popgen_ancestry_app.py
 
-Date of creation: 10/03/2025 
+Created: 10/03/2025
 Author: Anna Castellet
 """
 

@@ -12,7 +12,7 @@ Modules: folium.elements.MarcoElement, jinja2.Template
 Usage: <foliumMapObject> = add_legend(m, ancestry_colors, df, ancestry_columns)
 This code is intended to be used as part of a larger mapping application where the map can be displayed with an interactive legend showing dominant ancestries
 
-Date of adaptation: 13/03/2025 
+Created: 13/03/2025
 Author: Anna Castellet (adapted from Jaro Steindorff)
 """
 
